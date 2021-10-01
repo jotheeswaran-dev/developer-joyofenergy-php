@@ -4,14 +4,9 @@ namespace App\Http\Middleware\Services;
 
 class MeterReadingService
 {
-    public function getReadings(string $smartMeterId){
-        $meterPlanAccounts = Config::class('InitializeMeterReading.smartMeterToPricePlanAccounts');
-
-        $meterReadings = new \Ds\Map();
-        foreach ($meterPlanAccounts as $meterPlanAccount => $smartMeterId){
-            $meterReadings->put($meterPlanAccount, "1000");
-        }
-
+    public function getReadings(){
+        $meterReadingsInitialize = new MeterReadingsInitialize();
+        $meterReadings = $meterReadingsInitialize->generateMeterElectricityReadings();
         return $meterReadings;
     }
 }

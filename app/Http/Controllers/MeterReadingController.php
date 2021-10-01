@@ -11,7 +11,7 @@ class MeterReadingController extends Controller
     public function getReading() {
         $meterReadingService = new MeterReadingService();
         return response()->json([
-                "message" => $meterReadingService->getReadings("smart-meter-0")
+                "message" => $meterReadingService->getReadings()
             ], 200);
     }
 }
