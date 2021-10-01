@@ -9,7 +9,7 @@ use Ramsey\Uuid\Type\Decimal;
 class ElectricityReading extends Model
 {
     public \DateTime $time;
-    public float $reading;
+    public $reading;
 
     function __construct($time, $reading)
     {

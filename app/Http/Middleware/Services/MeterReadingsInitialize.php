@@ -6,6 +6,7 @@ namespace App\Http\Middleware\Services;
 use App\Models\ElectricityReading;
 use Nette\Utils\Random;
 use phpDocumentor\Reflection\Types\Integer;
+use function Sodium\add;
 
 class MeterReadingsInitialize
 {
@@ -13,11 +14,10 @@ class MeterReadingsInitialize
 
     public function generateMeterElectricityReadings(){
         $readings = [];
-
         $smartMeterIds = $this->getSmartMeterToPricePlanAccounts();
 
         foreach ($smartMeterIds as $smartMeterId){
-            $readings[$smartMeterId['id']] = $this->generate();
+            $readings[$smartMeterId['id']] = $this->generate(5);
         }
 
         return $readings;
@@ -30,20 +30,18 @@ class MeterReadingsInitialize
             ['id' => 'smart-meter-2', 'value' => 'PowerForEveryone'],
             ['id' => 'smart-meter-3', 'value' => 'ATheGreenEco'],
         ];
-
         return $this->smartMeterToPricePlanAccounts;
     }
 
-    public function generate(){
+    public function generate($number){
         $electricityReadings = [];
-        $decimals = 2; // number of decimal places
-        $div = pow(10, $decimals);
-        for($i = 0; $i < 5; $i++)
+        for($i = 0; $i < $number; $i++)
         {
-            $reading = 0.12132321;
-            $time = new \DateTime("2021-10-01T11:32:05.253872+05:30");
-            $electricityReading = new ElectricityReading($time, $reading);
-            $electricityReadings = [$electricityReading->reading, $electricityReading->time];
+            $electricityReading = [];
+            $reading = mt_rand (10,100) / 550;
+            $electricity = new ElectricityReading(new \DateTime(), $reading);
+            array_push($electricityReading, $electricity->reading, $electricity->time);
+            array_push($electricityReadings, $electricityReading);
         }
         return $electricityReadings;
     }
