@@ -8,10 +8,8 @@ use Illuminate\Http\Request;
 
 class MeterReadingController extends Controller
 {
-    public function getReading() {
+    public function getReading($smartMeterId) {
         $meterReadingService = new MeterReadingService();
-        return response()->json([
-                "message" => $meterReadingService->getReadings()
-            ], 200);
+        return response()->json( $meterReadingService->getReadings($smartMeterId), 200);
     }
 }

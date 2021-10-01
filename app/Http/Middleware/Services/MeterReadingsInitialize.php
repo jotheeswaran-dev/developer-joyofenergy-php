@@ -12,12 +12,14 @@ class MeterReadingsInitialize
 {
     public $smartMeterToPricePlanAccounts = [];
 
-    public function generateMeterElectricityReadings(){
+    public function generateMeterElectricityReadings($smartMeterId){
         $readings = [];
         $smartMeterIds = $this->getSmartMeterToPricePlanAccounts();
 
-        foreach ($smartMeterIds as $smartMeterId){
-            $readings[$smartMeterId['id']] = $this->generate(5);
+        foreach ($smartMeterIds as ["id" => $smartId]) {
+            if($smartId == $smartMeterId){
+                $readings = $this->generate(5);
+            }
         }
 
         return $readings;
@@ -37,11 +39,9 @@ class MeterReadingsInitialize
         $electricityReadings = [];
         for($i = 0; $i < $number; $i++)
         {
-            $electricityReading = [];
             $reading = mt_rand (10,100) / 550;
-            $electricity = new ElectricityReading(new \DateTime(), $reading);
-            array_push($electricityReading, $electricity->reading, $electricity->time);
-            array_push($electricityReadings, $electricityReading);
+            $electricity = new ElectricityReading(date("Y-m-d H:i:s").time(), $reading);
+            array_push($electricityReadings, array('readings' => $electricity->reading, 'time' => $electricity->time));
         }
         return $electricityReadings;
     }

@@ -8,7 +8,7 @@ use Ramsey\Uuid\Type\Decimal;
 
 class ElectricityReading extends Model
 {
-    public \DateTime $time;
+    public $time;
     public $reading;
 
     function __construct($time, $reading)

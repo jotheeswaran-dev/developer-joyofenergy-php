@@ -18,4 +18,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('readings/read',[MeterReadingController::class, 'getReading']);
+Route::get('readings/read/{smartMeterId}',[MeterReadingController::class, 'getReading']);
