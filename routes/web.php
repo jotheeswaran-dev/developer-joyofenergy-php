@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PricePlanComparatorController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MeterReadingController;
 
@@ -19,3 +20,4 @@ Route::get('/', function () {
 });
 
 Route::get('readings/read/{smartMeterId}',[MeterReadingController::class, 'getReading']);
+Route::get('price-plans/recommend/{smartMeterId}',[PricePlanComparatorController::class, 'recommendCheapestPricePlans']);
