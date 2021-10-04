@@ -4,6 +4,7 @@ namespace App\Http\Middleware\Services;
 
 
 use App\Models\ElectricityReading;
+use App\Models\PricePlan;
 use Nette\Utils\Random;
 use phpDocumentor\Reflection\Types\Integer;
 use function Sodium\add;
@@ -11,6 +12,7 @@ use function Sodium\add;
 class MeterReadingsInitialize
 {
     public $smartMeterToPricePlanAccounts = [];
+    public  $pricePlans = [];
 
     public function generateMeterElectricityReadings($smartMeterId){
         $readings = [];
@@ -40,9 +42,19 @@ class MeterReadingsInitialize
         for($i = 0; $i < $number; $i++)
         {
             $reading = mt_rand (10,100) / 550;
-            $electricity = new ElectricityReading(date("Y-m-d H:i:s").time(), $reading);
+            $electricity = new ElectricityReading(date("Y-m-d H:i:s", time() - $i*8000), $reading);
             array_push($electricityReadings, array('readings' => $electricity->reading, 'time' => $electricity->time));
         }
         return $electricityReadings;
+    }
+
+    public  function getPricePlans(){
+        $this->pricePlans = [
+            new PricePlan('DrEvilsDarkEnergy', 50),
+            new PricePlan('TheGreenEcoSystem', 40),
+            new PricePlan('PowerForEveryone', 30),
+            new PricePlan('ATheGreenEco', 10)
+        ];
+        return $this->pricePlans;
     }
 }

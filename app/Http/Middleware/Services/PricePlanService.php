@@ -7,32 +7,38 @@ use App\Models\PricePlan;
 class PricePlanService
 {
     private $meterReadingService;
-    private $pricePlan;
+    private $meterReadingInitializer;
 
     public function __construct()
     {
-        $this->pricePlan = new PricePlan();
         $this->meterReadingService = new MeterReadingService();
+        $this->meterReadingInitializer = new MeterReadingsInitialize();
     }
 
     public function getConsumptionCostOfElectricityReadingsForEachPricePlan($smartMeterId){
-        $electricityReadings = [];
         $electricityReadings = $this->meterReadingService->getReadings($smartMeterId);
 
         if(is_null($electricityReadings)){
             return $electricityReadings;
         }
 
-        $recommendedPlan = $this->calculateCost($electricityReadings);
-        return $recommendedPlan;
+        $getCostForAllPlans = [];
+        $pricePlans = $this->meterReadingInitializer->getPricePlans();
+        foreach ($pricePlans as $pricePlan) {
+            $getCostForAllPlans[] = array('key' => $pricePlan->supplier, 'value' => $this->calculateCost($electricityReadings, $pricePlan));
+        }
+
+         return $getCostForAllPlans;
     }
 
-    public function calculateCost($electricityReadings){
-        $averageCost = $this->calculateAverageReading($electricityReadings);
-        return $averageCost;
+    private function calculateCost($electricityReadings, PricePlan $pricePlan){
+        $average = $this->calculateAverageReading($electricityReadings);
+        $timeElapsed = $this->calculateTimeElapsed($electricityReadings);
+        $averagedCost = $average/$timeElapsed;
+        return $averagedCost * $pricePlan->unitrate;
     }
 
-    public function calculateAverageReading($electricityReadings)
+    private function calculateAverageReading($electricityReadings)
     {
         $newSummedReadings = 0;
         foreach (array($electricityReadings) as $electricityReading){
@@ -44,8 +50,18 @@ class PricePlanService
         return $newSummedReadings / count($electricityReadings);
     }
 
-    public function calculateTimeElapsed($electricityReadings)
+    private function calculateTimeElapsed($electricityReadings)
     {
-
+        $readingHours = [];
+        foreach (array($electricityReadings) as $electricityReading) {
+            foreach ($electricityReading as ["time" => $time]) {
+                $readingHours[] = $time;
+            }
+        }
+        $minimumElectricityReading = strtotime(min($readingHours));
+        $maximumElectricityReading = strtotime(max($readingHours));
+        $timeElapsedInHours = abs($maximumElectricityReading - $minimumElectricityReading)/(60*60);
+        return $timeElapsedInHours;
     }
+
 }
