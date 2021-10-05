@@ -12,16 +12,20 @@ use function Sodium\add;
 class MeterReadingsInitialize
 {
     public $smartMeterToPricePlanAccounts = [];
-    public  $pricePlans = [];
+    public $pricePlans = [];
+    public $electricityReadings;
 
-    public function generateMeterElectricityReadings($smartMeterId){
+    public function __construct()
+    {
+        $this->electricityReadings = $this->generateMeterElectricityReadings();
+    }
+
+    public function generateMeterElectricityReadings(){
         $readings = [];
         $smartMeterIds = $this->getSmartMeterToPricePlanAccounts();
 
         foreach ($smartMeterIds as ["id" => $smartId]) {
-            if($smartId == $smartMeterId){
-                $readings = $this->generate(5);
-            }
+            $readings[] = ["smartMeterId" => $smartId, "electricityReadings" => $this->generate(2)];
         }
 
         return $readings;

@@ -20,6 +20,7 @@ Route::get('/', function () {
 });
 
 Route::get('readings/read/{smartMeterId}',[MeterReadingController::class, 'getReading']);
+Route::post('readings/store/',[MeterReadingController::class, 'storeReadings']);
 Route::get('price-plans/recommend/{smartMeterId}/{limit?}',[PricePlanComparatorController::class, 'recommendCheapestPricePlans']);
 Route::get('price-plans/compare-all/{smartMeterId}',[PricePlanComparatorController::class, 'calculatedCostForEachPricePlan']);
 
