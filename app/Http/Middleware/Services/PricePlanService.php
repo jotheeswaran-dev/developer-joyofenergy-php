@@ -31,6 +31,21 @@ class PricePlanService
          return $getCostForAllPlans;
     }
 
+    public function getCostPlanForAllSuppliersWithCurrentSupplierDetails($smartMeterId){
+        $costPricePerPlans = $this->getConsumptionCostOfElectricityReadingsForEachPricePlan($smartMeterId);
+        $currentAvailableSupplierIds = $this->meterReadingInitializer->getSmartMeterToPricePlanAccounts();
+
+        $currentSupplierIdForSmartMeterID = [];
+        foreach ($currentAvailableSupplierIds as $currentAvailableSupplierId) {
+            if($currentAvailableSupplierId['id'] = $smartMeterId){
+                $currentSupplierIdForSmartMeterID = ['Current Supplier' => $currentAvailableSupplierId['value'] , "SmartmeterId" => $currentAvailableSupplierId['id']] ;
+            }
+        }
+        array_push($costPricePerPlans, $currentSupplierIdForSmartMeterID);
+
+        return $costPricePerPlans;
+    }
+
     private function calculateCost($electricityReadings, PricePlan $pricePlan){
         $average = $this->calculateAverageReading($electricityReadings);
         $timeElapsed = $this->calculateTimeElapsed($electricityReadings);

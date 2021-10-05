@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\Services\MeterReadingsInitialize;
 use App\Http\Middleware\Services\PricePlanService;
 use Illuminate\Http\Request;
 
 class PricePlanComparatorController extends Controller
 {
-    public function recommendCheapestPricePlans($smartMeterId, $limit = 0){
-        $pricePlanService = new PricePlanService();
+    private $pricePlanService;
 
-        $recommendedPlans = $pricePlanService->getConsumptionCostOfElectricityReadingsForEachPricePlan($smartMeterId);
+    public function __construct(){
+        $this->pricePlanService = new PricePlanService();
+    }
+
+    public function recommendCheapestPricePlans($smartMeterId, $limit = 0){
+        $recommendedPlans = $this->pricePlanService->getConsumptionCostOfElectricityReadingsForEachPricePlan($smartMeterId);
         $recommendedPlansAfterSorting = $this->sortPlans($recommendedPlans);
 
         if($limit != 0 && $limit < count($recommendedPlans)){
@@ -18,6 +23,12 @@ class PricePlanComparatorController extends Controller
         }
         return response()->json($recommendedPlansAfterSorting, 200);
     }
+
+    public  function calculatedCostForEachPricePlan($smartMeterId){
+        $costPricePerPlans = $this->pricePlanService->getCostPlanForAllSuppliersWithCurrentSupplierDetails($smartMeterId);
+        return response()->json($costPricePerPlans, 200);
+    }
+
 
     private function sortPlans($recommendedPlans){
         $sortedPlans = array_column($recommendedPlans, 'value');
